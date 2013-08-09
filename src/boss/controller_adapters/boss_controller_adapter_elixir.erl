@@ -19,19 +19,21 @@ init(Application, Controller, ControllerList, Req, SessionID) ->
         Module:module_info(exports)),
     {Module, ExportStrings, Req, SessionID}.
 
-before_filter({Module, ExportStrings, Req, SessionID}, Action, RequestMethod, Tokens) ->
+filters(Type, {Module, ExportStrings, _Req, _SessionID}, {RequestMethod, Action, Tokens}, GlobalFilters) ->
+    FunctionString = lists:concat([Type, "_filters"]),
     BinTokens = convert_tokens(Tokens),
-    case proplists:get_value("before_", ExportStrings) of
-        3 -> Module:before_(Req, SessionID, Action);
-        5 -> Module:before_(Req, SessionID, Action, RequestMethod, BinTokens);
-        _ -> ok
+    case proplists:get_value(FunctionString, ExportStrings) of
+        2 -> 
+            FunctionAtom = list_to_atom(FunctionString),
+            Module:FunctionAtom({RequestMethod, Action, BinTokens}, GlobalFilters);
+        _ -> GlobalFilters
     end.
 
-cache_info({Module, ExportStrings, Req, SessionID}, Action, Tokens, AuthInfo) ->
+cache_info({Module, ExportStrings, _Req, _SessionID}, Action, Tokens, ReqContext) ->
     BinTokens = convert_tokens(Tokens),
     case proplists:get_value("cache_", ExportStrings) of
-        4 -> Module:cache_(Req, SessionID, Action, BinTokens);
-        5 -> Module:cache_(Req, SessionID, Action, BinTokens, AuthInfo);
+        2 -> Module:cache_(Action, BinTokens);
+        3 -> Module:cache_(Action, BinTokens, ReqContext);
         _ -> ok
     end.
 
@@ -59,11 +61,4 @@ language({Module, ExportStrings, Req, SessionID}, Action, AuthInfo) ->
         3 -> Module:lang_(Req, SessionID, Action);
         4 -> Module:lang_(Req, SessionID, Action, AuthInfo);
         _ -> auto
-    end.
-
-after_filter({Module, ExportStrings, Req, SessionID}, Action, Result, AuthInfo) ->
-    case proplists:get_value("after_", ExportStrings) of
-        4 -> Module:after_(Req, SessionID, Action, Result);
-        5 -> Module:after_(Req, SessionID, Action, Result, AuthInfo);
-        _ -> Result
     end.
