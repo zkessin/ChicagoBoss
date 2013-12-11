@@ -9,3 +9,5 @@ script:
   - "./make_plt.sh"
   - rebar eunit -v skip_deps=true
   - sh ./dialyzer.sh
+notifications:
+  email: false
