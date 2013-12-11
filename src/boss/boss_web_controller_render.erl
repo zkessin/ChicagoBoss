@@ -10,6 +10,9 @@
 
 -export([render_view/5]).
 
+-ifdef(TEST).
+-compile(export_all).
+-endif.
 -include("boss_web.hrl").
 -type action_results() :: 'render'|render_other|redirect| js| json| jsonp| output.
 
