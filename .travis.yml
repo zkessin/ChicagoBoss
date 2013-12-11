@@ -6,7 +6,7 @@ otp_release:
 script:
   - rebar get-deps
   - rebar compile 
-  - "./make_plt.sh"
+  - sh "./make_plt.sh"
   - rebar eunit -v skip_deps=true
   - sh ./dialyzer.sh
 notifications:
