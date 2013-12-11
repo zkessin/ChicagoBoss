@@ -1,5 +1,5 @@
 #!/bin/bash
-clear
+
 
 PLT=plt/cb.plt
 echo $PLT
@@ -10,7 +10,7 @@ if [ ! -f $PLT ]; then
        syntax_tools edoc xmerl \
        --statistics\
        --output_plt $PLT
-   rm deps/riak_core/ebin/*.beam
+  
    echo "********************************************************************************"
    dialyzer --add_to_plt deps/*/ebin						--plt $PLT
    echo "********************************************************************************"
