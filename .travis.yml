@@ -7,7 +7,8 @@ script:
   - rebar get-deps
   - rebar compile 
   - rebar eunit -v skip_deps=true
-  - ./script/ci/make-plt.sh
-  - ./script/ci/dialyzer.sh
+  - ls -l *.sh
+  - ./make-plt.sh
+  - ./dialyzer.sh
 notifications:
   email: false
