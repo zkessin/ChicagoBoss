@@ -9,7 +9,7 @@ dialyzer  --build_plt --apps kernel stdlib mnesia  inets ssl crypto \
        syntax_tools edoc xmerl \
        --statistics\
        --output_plt $PLT
-  
+rm -f deos/riak_*/ebin/*beam  
 echo "********************************************************************************"
 dialyzer --add_to_plt deps/*/ebin						--plt $PLT
 echo "********************************************************************************"
