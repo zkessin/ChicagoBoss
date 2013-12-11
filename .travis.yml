@@ -9,7 +9,7 @@ script:
   - rebar eunit -v skip_deps=true
   - ls -l *.sh
   - mkdir plt
-  - ./make-plt.sh
+  - ./travis-dialyzer
   - ./dialyzer.sh
 notifications:
   email: false
