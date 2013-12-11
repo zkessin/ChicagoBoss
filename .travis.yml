@@ -6,8 +6,8 @@ otp_release:
 script:
   - rebar get-deps
   - rebar compile 
-  - sh "./make_plt.sh"
+  - ./script/ci/make_plt.sh
   - rebar eunit -v skip_deps=true
-  - sh ./dialyzer.sh
+  - ./script/ci/dialyzer.sh
 notifications:
   email: false
