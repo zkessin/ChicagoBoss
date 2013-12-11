@@ -8,6 +8,7 @@ script:
   - rebar compile 
   - rebar eunit -v skip_deps=true
   - ls -l *.sh
+  - mkdir plt
   - ./make-plt.sh
   - ./dialyzer.sh
 notifications:

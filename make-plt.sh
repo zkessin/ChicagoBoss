@@ -1,5 +1,5 @@
 #!/bin/bash
-clear
+
 
 PLT=plt/cb.plt
 echo $PLT
