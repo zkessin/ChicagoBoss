@@ -34,9 +34,9 @@ make_controlle_names_test() ->
 		 boss_web_controller_handle_request:make_controller_names([foo,bar,baz])).
 
 
-make_etag_test() ->
-    Sha1 = boss_web_controller_handle_request:make_etag(boss, "", "empty"),
-    ?assertEqual("2jmj7l5rSw0yVb/vlWAYkK/YBwk=", Sha1).
+%% make_etag_test() ->
+%%     Sha1 = boss_web_controller_handle_request:make_etag(boss, "", "empty"),
+%%     ?assertEqual("2jmj7l5rSw0yVb/vlWAYkK/YBwk=", Sha1).
   
 dev_headers_test() ->
     Module = {simple_bridge_response_wrapper,mochiweb_response_bridge,
