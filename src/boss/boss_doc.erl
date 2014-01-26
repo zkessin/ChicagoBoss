@@ -16,8 +16,8 @@ run(InDir, OutDir) ->
                     true ->
                         Module = module_name_from_template(File),
                         case erlydtl:compile(filename:join([InDir, File]), Module) of
-                            ok -> {[{File, Module}|ModAcc], ErrAcc};
-                            Error -> {ModAcc, [Error|ErrAcc]}
+                            {ok,Module} -> {[{File, Module}|ModAcc], ErrAcc};
+                            Error       -> {ModAcc, [Error|ErrAcc]}
                         end;
                     false -> 
                         case File of
