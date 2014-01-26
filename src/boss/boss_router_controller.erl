@@ -6,6 +6,10 @@
 
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
+-ifdef(TEST).
+-compile(export_all).
+-endif.
+
 -define(BOSS_ROUTES_TABLE, boss_routes).
 -define(BOSS_REVERSE_ROUTES_TABLE, boss_reverse_routes).
 -define(BOSS_HANDLERS_TABLE, boss_handlers).
@@ -25,7 +29,7 @@
 -spec handle_call('get_all' | 'reload' | {'handle',_} | {'route',_} | {'set_controllers',_} | {'unroute',_,_,[tuple()]},_,#state{}) -> {'reply',_,#state{}}.
 -spec handle_cast(_,_) -> {'noreply',_}.
 -spec handle_info(_,_) -> {'noreply',_}.
--spec init([any()]) -> {'ok',#state{}}.
+-spec init([{atom(), term()}]) -> {'ok',#state{}}.
 -spec start_link() -> 'ignore' | {'error',_} | {'ok',pid()}.
 -spec start_link(_) -> 'ignore' | {'error',_} | {'ok',pid()}.
 -spec terminate(_,#state{}) -> 'true'.
@@ -36,16 +40,17 @@ start_link(Args) ->
     gen_server:start_link(?MODULE, Args, []).
 
 init(Options) ->
-    BossApp = proplists:get_value(application, Options),
-    Controllers = proplists:get_value(controllers, Options, []),
-    RoutesTableId = ets:new(?BOSS_ROUTES_TABLE, [ordered_set, public, {keypos, 2}]),
+    BossApp              = proplists:get_value(application, Options),
+    Controllers          = proplists:get_value(controllers, Options, []),
+    RoutesTableId        = ets:new(?BOSS_ROUTES_TABLE, [ordered_set, public, {keypos, 2}]),
     ReverseRoutesTableId = ets:new(?BOSS_REVERSE_ROUTES_TABLE, [ordered_set, public, {keypos, 2}]),
-    HandlersTableId = ets:new(?BOSS_HANDLERS_TABLE, [ordered_set, public, {keypos, 2}]),
-    State = #state{ application = BossApp, 
-        routes_table_id = RoutesTableId, 
-        reverse_routes_table_id = ReverseRoutesTableId,
-        handlers_table_id = HandlersTableId, 
-        controllers = Controllers },
+    HandlersTableId      = ets:new(?BOSS_HANDLERS_TABLE, [ordered_set, public, {keypos, 2}]),
+    State                = #state{
+                              application             = BossApp, 
+                              routes_table_id         = RoutesTableId, 
+                              reverse_routes_table_id = ReverseRoutesTableId,
+                              handlers_table_id       = HandlersTableId, 
+                              controllers             = Controllers },
     load(State),
     {ok, State}.
 
@@ -97,14 +102,22 @@ handle_call({unroute, Controller, undefined, Params}, From, State) ->
     handle_call({unroute, Controller, default_action(State, Controller), Params}, From, State);
 handle_call({unroute, Controller, Action, Params}, _From, State) ->
     RoutedURL = case ets:lookup(State#state.reverse_routes_table_id,
-            {State#state.application, Controller, Action, lists:keysort(1, Params)}) of
-        [#boss_reverse_route{ url = Url }] -> Url;
-        [] -> undefined
+                                {State#state.application, Controller, Action, lists:keysort(1, Params)}) of
+                    [#boss_reverse_route{ url = Url }] -> Url;
+                    [] -> undefined
     end,
     {reply, RoutedURL, State};
 handle_call(get_all, _From, State) ->
-    Res = lists:map(fun(#boss_route{ url = U, application = App, controller = C, action = A, params = P }) -> 
-                [{url, U}, {application, App}, {controller, C}, {action, A}, {params, P}]
+    Res = lists:map(fun(#boss_route{ url         = U,
+                                     application = App,
+                                     controller  = C, 
+                                     action      = A, 
+                                     params      = P }) -> 
+                            [{url,         U}, 
+                             {application, App}, 
+                             {controller,  C},
+                             {action,      A}, 
+                             {params,      P}]
         end, lists:flatten(ets:match(State#state.routes_table_id, '$1'))),
     {reply, Res, State};
 handle_call({set_controllers, ControllerList}, _From, State) ->
