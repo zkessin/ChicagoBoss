@@ -55,12 +55,11 @@ load_all_modules(Application, TranslatorSupPid) ->
 
 load_all_modules(Application, TranslatorSupPid, OutDir) ->
     lager:info("Loading application ~p", [Application]),
-    [{_, TranslatorPid, _, _}]	= supervisor:which_children(TranslatorSupPid),
-    
-    Ops = make_ops_list(TranslatorPid),
-
-    AllModules = make_all_modules(Application, OutDir, Ops),
+    [{_, TranslatorPid, _, _}] = supervisor:which_children(TranslatorSupPid),
+    Ops                        = make_ops_list(TranslatorPid),
+    AllModules                 = make_all_modules(Application, OutDir, Ops),
     {ok, AllModules}.
+
 -type error(X)   :: {ok, X} | {error, string()}.
 -type op_key()   :: test_modules|lib_modules|websocket_modules|mail_modules|controller_modules|
                     model_modules| view_lib_tags_modules|view_lib_helper_modules|view_modules.
@@ -401,8 +400,11 @@ load_views_inner(Application, OutDir, TranslatorPid) ->
     fun(File, Acc) ->
 	    TemplateAdapter = boss_files:template_adapter_for_extension(
 				filename:extension(File)),
-	    ViewR =compile_view(Application, File, TemplateAdapter, OutDir, TranslatorPid),
+	    ViewR = compile_view(Application, File, TemplateAdapter, OutDir, TranslatorPid),
 	    case ViewR of
+                ok ->
+                    Module = filename:basename(filename:rootname(File)),
+                    [Module|Acc];
 		{ok, Module} ->
 		    [Module|Acc];
 		{error, Reason} ->
