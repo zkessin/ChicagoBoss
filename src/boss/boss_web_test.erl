@@ -50,7 +50,7 @@ run_tests([Application, Adapter|TestList]) ->
     Pid = erlang:spawn(fun() -> app_info_loop(AppInfo) end),
     register(app_info, Pid),
     io:format("Found tests: ~p~n", [TestList]),
-    lists:map(fun(TestModule) ->
+    lists:foreach(fun(TestModule) ->
                 TestModuleAtom = list_to_atom(TestModule),
                 io:format("~nRunning: ~p~n", [TestModule]),
                 io:format("~-60s", ["Root test"]),
