@@ -6,9 +6,10 @@ otp_release:
 script:
   - rebar get-deps
   - rebar compile 
-  - rebar eunit  skip_deps=true
+  - rebar eunit skip_deps=true
+  - ./travis-dialyzer.sh
 notifications:
   email: false 
 
 #  - mkdir plt
-#  - ./travis-dialyzer.sh
+# 
