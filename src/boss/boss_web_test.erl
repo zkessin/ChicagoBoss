@@ -47,8 +47,10 @@ bootstrap_test_env(Application, Adapter) ->
 % This function deliberately takes one argument so it can be invoked from the command-line.
 run_tests([Application, Adapter|TestList]) ->
     AppInfo = bootstrap_test_env(list_to_atom(Application), list_to_atom(Adapter)),
-    Pid = erlang:spawn(fun() -> app_info_loop(AppInfo) end),
-    register(app_info, Pid),
+    _Pid = erlang:spawn(fun() -> 
+                                register(app_info, self()),
+                                app_info_loop(AppInfo) end),
+
     io:format("Found tests: ~p~n", [TestList]),
     lists:foreach(fun(TestModule) ->
                 TestModuleAtom = list_to_atom(TestModule),
@@ -313,6 +315,7 @@ find_selected_value([{<<"option">>, Attrs, [Label]}|Rest]) when is_binary(Label)
             end
     end.
 
+-spec(app_info_loop(_) -> no_return()).
 app_info_loop(AppInfo) ->
     receive
         {From, get_info} ->

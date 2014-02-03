@@ -6,7 +6,7 @@
 -spec source(atom() | tuple()) -> any().
 -spec dependencies(atom() | tuple()) -> any().
 -spec render(atom() | tuple(),_,_) -> {ok, iolist()}|{error, _}.
--spec compile_file(atom() | binary() | [atom() | [any()] | char()],_,[any()]) -> any().
+-spec compile_file(atom() | binary() | [atom() | [any()] | char()],_,[any()]) -> {ok, atom()}| {error,any()}.
 -spec compile(atom() | binary() | [atom() | [any()] | char()],_,_,_,_,_,_,_,[any()],[any()],[any()],_) -> any().
 file_extensions() -> ["dtl", "html", "txt", "js"].
 
@@ -38,9 +38,10 @@ compile_file(ViewPath, Module, Options) ->
 				  CompilerOptions, Locales, DocRoot, TagHelpers, FilterHelpers,
 				  ExtraTagHelpers, ExtraFilterHelpers),
     case Res of
-        ok ->
+        {ok, Module} ->
             {ok, Module};
-        Err -> Err
+        Err          -> 
+            Err
     end.
 
 

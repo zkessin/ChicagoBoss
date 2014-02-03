@@ -31,10 +31,12 @@
 
      
 -spec incoming_mail_controller_module(application()) -> atom().
--spec load_all_modules(application(), atom() | pid() | {atom(),atom()}) ->
+-type translator() :: atom() | pid() | {atom(),atom()}.
+-spec load_all_modules(application(), translator()) ->
    {'ok',module_types()}.
--spec load_all_modules(application(),atom() | pid() | {atom(),atom()},_) ->
+-spec load_all_modules(application(),translator(), string() ) ->
    {'ok',module_types()}.
+
 -spec load_all_modules_and_emit_app_file(application(),atom() | binary() | [atom() | [any()] | char()]) -> 
    'ok' | {'error',atom()}.
 -spec load_libraries(application()) -> {'error',[any(),...]} | {'ok',[any()]}.
@@ -51,7 +53,7 @@
 -define(CUSTOM_TAGS_DIR_MODULE, '_view_lib_tags').
 
 load_all_modules(Application, TranslatorSupPid) ->
-    load_all_modules(Application, TranslatorSupPid, undefined).
+    load_all_modules(Application, TranslatorSupPid, "").
 
 load_all_modules(Application, TranslatorSupPid, OutDir) ->
     lager:info("Loading application ~p", [Application]),
